@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HTTP server &mdash; Rasa Core 0.7.9 documentation</title>
+  <title>HTTP server &mdash; Rasa Core 0.8.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.7.9 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
         <link rel="next" title="Connecting to messaging &amp; voice platforms" href="connectors.html"/>
         <link rel="prev" title="Plumbing - How it all fits together" href="plumbing.html"/> 
 
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.7
+                0.8
               </div>
             
           
@@ -119,6 +119,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#endpoints">Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="connectors.html">Connecting to messaging &amp; voice platforms</a></li>
@@ -135,6 +136,7 @@
 <li class="toctree-l1"><a class="reference internal" href="interpreters.html">Interpreters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="policies.html">Custom Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state.html">Tracking Conversation State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrations.html">Migration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
@@ -293,9 +295,9 @@ models with</p>
 </div>
 <div class="section" id="starting-a-conversation">
 <span id="http-start-conversation"></span><h2>Starting a conversation<a class="headerlink" href="#starting-a-conversation" title="Permalink to this headline">¶</a></h2>
-<p>You need to do a <code class="docutils literal"><span class="pre">POST</span></code> to the <code class="docutils literal"><span class="pre">/conversation/&lt;sender&gt;/parse</span></code> endpoint. <code class="docutils literal"><span class="pre">&lt;sender&gt;</span></code>
-is the conversation id (e.g. <code class="docutils literal"><span class="pre">default</span></code> if you just have one user, or the facebook user id or any
-other identifier).</p>
+<p>You need to do a <code class="docutils literal"><span class="pre">POST</span></code> to the <code class="docutils literal"><span class="pre">/conversation/&lt;sender_id&gt;/parse</span></code> endpoint.
+<code class="docutils literal"><span class="pre">&lt;sender_id&gt;</span></code> is the conversation id (e.g. <code class="docutils literal"><span class="pre">default</span></code> if you just have one
+user, or the facebook user id or any other identifier).</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>$ curl -XPOST localhost:5005/conversations/default/parse -d <span class="s1">&#39;{&quot;query&quot;:&quot;hello there&quot;}&#39;</span>
 </pre></div>
 </div>
@@ -365,7 +367,7 @@ information about the user) or restart the conversation.</p>
 </pre></div>
 </div>
 <p>Here is a list of all available events you can append to the <code class="docutils literal"><span class="pre">events</span></code> array in
-your call to <code class="docutils literal"><span class="pre">/conversation/&lt;sender&gt;/continue</span></code>.</p>
+your call to <code class="docutils literal"><span class="pre">/conversation/&lt;sender_id&gt;/continue</span></code>.</p>
 <div class="section" id="set-a-slot">
 <h3>Set a slot<a class="headerlink" href="#set-a-slot" title="Permalink to this headline">¶</a></h3>
 <table class="docutils field-list" frame="void" rules="none">
@@ -415,9 +417,9 @@ be reasonable given the <a class="reference internal" href="domains.html#slot-ty
 </div>
 <div class="section" id="endpoints">
 <h2>Endpoints<a class="headerlink" href="#endpoints" title="Permalink to this headline">¶</a></h2>
-<dl class="get">
-<dt id="get--conversations-(str-sender)-parse">
-<code class="descname">GET </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender</em><span class="sig-paren">)</span><code class="descname">/parse</code><a class="headerlink" href="#get--conversations-(str-sender)-parse" title="Permalink to this definition">¶</a></dt>
+<dl class="post">
+<dt id="post--conversations-(str-sender_id)-parse">
+<code class="descname">POST </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender_id</em><span class="sig-paren">)</span><code class="descname">/parse</code><a class="headerlink" href="#post--conversations-(str-sender_id)-parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Notify the dialogue engine that the user posted a new message. You must
 <code class="docutils literal"><span class="pre">POST</span></code> data in this format <code class="docutils literal"><span class="pre">'{&quot;query&quot;:&quot;&lt;your</span> <span class="pre">text</span> <span class="pre">to</span> <span class="pre">parse&gt;&quot;}'</span></code>,
 you can do this with</p>
@@ -463,9 +465,9 @@ you can do this with</p>
 </table>
 </dd></dl>
 
-<dl class="get">
-<dt id="get--conversations-(str-sender)-continue">
-<code class="descname">GET </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender</em><span class="sig-paren">)</span><code class="descname">/continue</code><a class="headerlink" href="#get--conversations-(str-sender)-continue" title="Permalink to this definition">¶</a></dt>
+<dl class="post">
+<dt id="post--conversations-(str-sender_id)-continue">
+<code class="descname">POST </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender_id</em><span class="sig-paren">)</span><code class="descname">/continue</code><a class="headerlink" href="#post--conversations-(str-sender_id)-continue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Continue the prediction loop for the conversation with id <cite>user_id</cite>. Should
 be called until the endpoint returns <code class="docutils literal"><span class="pre">action_listen</span></code> as the next action.
 Between the calls to this endpoint, your code should execute the mentioned
@@ -496,6 +498,198 @@ wait for the next user input.</p>
             <span class="s2">&quot;people&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
             <span class="s2">&quot;price&quot;</span><span class="o">:</span> <span class="kc">null</span>
         <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--conversations-(str-sender_id)-tracker">
+<code class="descname">GET </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender_id</em><span class="sig-paren">)</span><code class="descname">/tracker</code><a class="headerlink" href="#get--conversations-(str-sender_id)-tracker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the current tracker state for the conversation with <code class="docutils literal"><span class="pre">sender_id</span></code>.
+This includes the set slots as well as the latest message and all previous
+events.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>curl http://localhost:5005/conversations/default/tracker <span class="p">|</span> python -mjson.tool
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/javascript</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;events&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;event&quot;</span><span class="o">:</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;action_listen&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;event&quot;</span><span class="o">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;parse_data&quot;</span><span class="o">:</span> <span class="p">{</span>
+                <span class="s2">&quot;entities&quot;</span><span class="o">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;intent&quot;</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;confidence&quot;</span><span class="o">:</span> <span class="mf">0.7561643619088745</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;affirm&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;intent_ranking&quot;</span><span class="o">:</span> <span class="p">[</span>
+                    <span class="p">...</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;hello there&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;hello there&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;latest_message&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;entities&quot;</span><span class="o">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;intent&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;confidence&quot;</span><span class="o">:</span> <span class="mf">0.7561643619088745</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;affirm&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;intent_ranking&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="p">...</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;hello there&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;paused&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">&quot;sender_id&quot;</span><span class="o">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slots&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;cuisine&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;info&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;matches&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;people&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;price&quot;</span><span class="o">:</span> <span class="kc">null</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--conversations-(str-sender_id)-tracker">
+<code class="descname">PUT </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender_id</em><span class="sig-paren">)</span><code class="descname">/tracker</code><a class="headerlink" href="#put--conversations-(str-sender_id)-tracker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace the tracker state using events. Any existing tracker for
+<code class="docutils literal"><span class="pre">sender_id</span></code> will be discarded. A new tracker will be created and the
+passed events will be applied to create a new state.</p>
+<p>The format of the passed events is the same as for the <code class="docutils literal"><span class="pre">/continue</span></code>
+endpoint.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>curl -XPUT http://localhost:5005/conversations/default/tracker -d <span class="se">\</span>
+  <span class="s1">&#39;[{&quot;event&quot;: &quot;slot&quot;, &quot;name&quot;: &quot;cuisine&quot;, &quot;value&quot;: &quot;mexican&quot;},{&quot;event&quot;: &quot;action&quot;, &quot;name&quot;: &quot;action_listen&quot;}]&#39;</span> <span class="p">|</span> python -mjson.tool
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/javascript</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;events&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;event&quot;</span><span class="o">:</span> <span class="s2">&quot;slot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;cuisine&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="o">:</span> <span class="s2">&quot;mexican&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;event&quot;</span><span class="o">:</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;action_listen&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;latest_message&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;entities&quot;</span><span class="o">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;intent&quot;</span><span class="o">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="kc">null</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;paused&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">&quot;sender_id&quot;</span><span class="o">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slots&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;cuisine&quot;</span><span class="o">:</span> <span class="s2">&quot;mexican&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;info&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;matches&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;people&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;price&quot;</span><span class="o">:</span> <span class="kc">null</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> &#8211; no error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--conversations-(str-sender_id)-tracker-events">
+<code class="descname">POST </code><code class="descname">/conversations/</code><span class="sig-paren">(</span><em class="property">str: </em><em>sender_id</em><span class="sig-paren">)</span><code class="descname">/tracker/events</code><a class="headerlink" href="#post--conversations-(str-sender_id)-tracker-events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the tracker state of the conversation with events. Any existing
+events will be kept and the new events will be appended, updating the
+existing state.</p>
+<p>The format of the passed events is the same as for the <code class="docutils literal"><span class="pre">/continue</span></code>
+endpoint.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>curl -XPOST http://localhost:5005/conversations/default/tracker/events -d <span class="se">\</span>
+  <span class="s1">&#39;[{&quot;event&quot;: &quot;slot&quot;, &quot;name&quot;: &quot;cuisine&quot;, &quot;value&quot;: &quot;mexican&quot;},{&quot;event&quot;: &quot;action&quot;, &quot;name&quot;: &quot;action_listen&quot;}]&#39;</span> <span class="p">|</span> python -mjson.tool
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Vary</span><span class="o">:</span> <span class="l">Accept</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/javascript</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;events&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">&quot;latest_message&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;entities&quot;</span><span class="o">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;intent&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;confidence&quot;</span><span class="o">:</span> <span class="mf">0.7561643619088745</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;affirm&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;intent_ranking&quot;</span><span class="o">:</span> <span class="p">[</span>
+            <span class="p">...</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;hello there&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;paused&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">&quot;sender_id&quot;</span><span class="o">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;slots&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;cuisine&quot;</span><span class="o">:</span> <span class="s2">&quot;mexican&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;info&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;location&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;matches&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;people&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="s2">&quot;price&quot;</span><span class="o">:</span> <span class="kc">null</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -545,12 +739,29 @@ wait for the next user input.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this headline">¶</a></h2>
+<p>We recommend to not expose the Rasa Core server to the outside world but
+rather connect to it from your backend over a private connection (e.g.
+between docker containers).</p>
+<p>Nevertheless, there is build in token authentication. If you specify a token
+when starting the server, that token needs to be passed with every request:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m rasa_core.server --auth_token thisismysecret -d examples/babi/models/policy/current -u examples/babi/models/nlu/current_py2 -o out.log
+</pre></div>
+</div>
+<p>Your requests should pass the token, in our case <code class="docutils literal"><span class="pre">thisismysecret</span></code>,
+as a parameter:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ curl -XPOST localhost:5005/conversations/default/parse?token<span class="o">=</span>thisismysecret -d <span class="s1">&#39;{&quot;query&quot;:&quot;hello there&quot;}&#39;</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
            </div>
           </div>
           <footer>
+
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
@@ -584,22 +795,14 @@ wait for the next user input.</p>
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.7.9
+        v: 0.8.0
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.0/http.html">0.8.0</a></dd>
             <dd><a href="0.7.9/http.html">0.7.9</a></dd>
-            <dd><a href="0.7.8/http.html">0.7.8</a></dd>
-            <dd><a href="0.7.7/http.html">0.7.7</a></dd>
-            <dd><a href="0.7.6/http.html">0.7.6</a></dd>
-            <dd><a href="0.7.5/http.html">0.7.5</a></dd>
-            <dd><a href="0.7.4/http.html">0.7.4</a></dd>
-            <dd><a href="0.7.3/http.html">0.7.3</a></dd>
-            <dd><a href="0.7.2/http.html">0.7.2</a></dd>
-            <dd><a href="0.7.1/http.html">0.7.1</a></dd>
-            <dd><a href="0.7.0/http.html">0.7.0</a></dd>
             <dd><a href="0.6.9/http.html">0.6.9</a></dd>
         </dl>
         <dl>
@@ -615,7 +818,7 @@ wait for the next user input.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.9',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -641,6 +844,8 @@ wait for the next user input.</p>
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
+
+  
   
  
 <!-- Global Site Tag (gtag.js) - Google Analytics -->

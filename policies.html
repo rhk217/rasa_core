@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Custom Policies &mdash; Rasa Core 0.7.9 documentation</title>
+  <title>Custom Policies &mdash; Rasa Core 0.8.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.7.9 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
         <link rel="next" title="Tracking Conversation State" href="state.html"/>
         <link rel="prev" title="Interpreters" href="interpreters.html"/> 
 
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.7
+                0.8
               </div>
             
           
@@ -127,6 +127,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="state.html">Tracking Conversation State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrations.html">Migration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
@@ -313,13 +314,13 @@ We won&#8217;t use machine learning yet, we will just create a policy which memo
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Policy trainer got kwargs: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
         <span class="n">check_domain_sanity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
 
-        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_training_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_history</span><span class="p">,</span>
+        <span class="n">training_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_training_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_history</span><span class="p">,</span>
                                            <span class="n">augmentation_factor</span><span class="p">,</span>
                                            <span class="n">max_training_samples</span><span class="p">,</span>
                                            <span class="n">max_number_of_trackers</span><span class="p">,</span>
                                            <span class="n">remove_duplicates</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">featurizer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">featurizer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_prepare_training_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">max_history</span><span class="p">,</span> <span class="n">augmentation_factor</span><span class="p">,</span>
                                <span class="n">max_training_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -327,25 +328,23 @@ We won&#8217;t use machine learning yet, we will just create a policy which memo
                                <span class="n">remove_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reads training data from file and prepares it for the training.&quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">rasa_core.training_utils</span> <span class="k">import</span> <span class="n">extract_training_data_from_file</span>
+        <span class="kn">from</span> <span class="nn">rasa_core.training</span> <span class="k">import</span> <span class="n">extract_training_data_from_file</span>
 
         <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">extract_training_data_from_file</span><span class="p">(</span>
+            <span class="n">training_data</span> <span class="o">=</span> <span class="n">extract_training_data_from_file</span><span class="p">(</span>
                     <span class="n">filename</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">featurizer</span><span class="p">,</span>
+                    <span class="n">interpreter</span><span class="o">=</span><span class="n">RegexInterpreter</span><span class="p">(),</span>
                     <span class="n">augmentation_factor</span><span class="o">=</span><span class="n">augmentation_factor</span><span class="p">,</span>
                     <span class="n">max_history</span><span class="o">=</span><span class="n">max_history</span><span class="p">,</span>
                     <span class="n">remove_duplicates</span><span class="o">=</span><span class="n">remove_duplicates</span><span class="p">,</span>
-                    <span class="n">domain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span>
-                    <span class="n">featurizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">featurizer</span><span class="p">,</span>
-                    <span class="n">interpreter</span><span class="o">=</span><span class="n">RegexInterpreter</span><span class="p">(),</span>
                     <span class="n">max_number_of_trackers</span><span class="o">=</span><span class="n">max_number_of_trackers</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">max_training_samples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="n">max_training_samples</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">max_training_samples</span><span class="p">]</span>
+                <span class="n">training_data</span><span class="o">.</span><span class="n">limit_training_data_to</span><span class="p">(</span><span class="n">max_training_samples</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">training_data</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">num_features</span><span class="p">))</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">num_actions</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+            <span class="k">return</span> <span class="n">DialogueTrainingData</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>What the <code class="docutils literal"><span class="pre">train()</span></code> method does is the following:</p>
@@ -358,7 +357,7 @@ We won&#8217;t use machine learning yet, we will just create a policy which memo
 </ol>
 </li>
 <li>calls the policy&#8217;s <code class="docutils literal"><span class="pre">train()</span></code> method to create a policy from these <code class="docutils literal"><span class="pre">X,</span> <span class="pre">y</span></code>
-state-action pairs (don&#8217;t mind the <code class="docutils literal"><span class="pre">ensamble</span></code> it is just a collection of
+state-action pairs (don&#8217;t mind the <code class="docutils literal"><span class="pre">ensemble</span></code> it is just a collection of
 policies - e.g. you can combine multiple policies and train them all at
 once using the ensemble)</li>
 </ol>
@@ -409,22 +408,17 @@ These base classes have already implemented the logic of persisting and reloadin
 </pre></div>
 </div>
 <p>and the training is run here:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># type: (DialogueTrainingData, Domain, **Any) -&gt; None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_architecture</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">num_features</span><span class="p">,</span>
                                              <span class="n">domain</span><span class="o">.</span><span class="n">num_actions</span><span class="p">,</span>
-                                             <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">y_one_hot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">domain</span><span class="o">.</span><span class="n">num_actions</span><span class="p">))</span>
-        <span class="n">y_one_hot</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-
-        <span class="n">number_of_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">number_of_samples</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="n">shuffled_X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
-        <span class="n">shuffled_y</span> <span class="o">=</span> <span class="n">y_one_hot</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:]</span>
+                                             <span class="n">training_data</span><span class="o">.</span><span class="n">max_history</span><span class="p">())</span>
+        <span class="n">shuffled_X</span><span class="p">,</span> <span class="n">shuffled_y</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">shuffled</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
 
         <span class="n">validation_split</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;validation_split&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fitting model with </span><span class="si">{}</span><span class="s2"> total samples and a validation &quot;</span>
-                    <span class="s2">&quot;split of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_of_samples</span><span class="p">,</span> <span class="n">validation_split</span><span class="p">))</span>
+                    <span class="s2">&quot;split of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">training_data</span><span class="o">.</span><span class="n">num_examples</span><span class="p">(),</span>
+                                         <span class="n">validation_split</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">shuffled_X</span><span class="p">,</span> <span class="n">shuffled_y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;epochs&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done fitting keras policy model&quot;</span><span class="p">)</span>
@@ -438,6 +432,7 @@ These base classes have already implemented the logic of persisting and reloadin
            </div>
           </div>
           <footer>
+
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
@@ -471,22 +466,14 @@ These base classes have already implemented the logic of persisting and reloadin
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.7.9
+        v: 0.8.0
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.0/policies.html">0.8.0</a></dd>
             <dd><a href="0.7.9/policies.html">0.7.9</a></dd>
-            <dd><a href="0.7.8/policies.html">0.7.8</a></dd>
-            <dd><a href="0.7.7/policies.html">0.7.7</a></dd>
-            <dd><a href="0.7.6/policies.html">0.7.6</a></dd>
-            <dd><a href="0.7.5/policies.html">0.7.5</a></dd>
-            <dd><a href="0.7.4/policies.html">0.7.4</a></dd>
-            <dd><a href="0.7.3/policies.html">0.7.3</a></dd>
-            <dd><a href="0.7.2/policies.html">0.7.2</a></dd>
-            <dd><a href="0.7.1/policies.html">0.7.1</a></dd>
-            <dd><a href="0.7.0/policies.html">0.7.0</a></dd>
             <dd><a href="0.6.9/policies.html">0.6.9</a></dd>
         </dl>
         <dl>
@@ -502,7 +489,7 @@ These base classes have already implemented the logic of persisting and reloadin
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.9',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -528,6 +515,8 @@ These base classes have already implemented the logic of persisting and reloadin
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
+
+  
   
  
 <!-- Global Site Tag (gtag.js) - Google Analytics -->

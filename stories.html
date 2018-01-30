@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Stories - The Training Data &mdash; Rasa Core 0.7.9 documentation</title>
+  <title>Stories - The Training Data &mdash; Rasa Core 0.8.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.7.9 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
         <link rel="next" title="Common Patterns" href="patterns.html"/>
         <link rel="prev" title="Domain, Slots, and Actions" href="domains.html"/> 
 
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.7
+                0.8
               </div>
             
           
@@ -127,6 +127,7 @@
 <li class="toctree-l1"><a class="reference internal" href="interpreters.html">Interpreters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="policies.html">Custom Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state.html">Tracking Conversation State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrations.html">Migration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
@@ -239,14 +240,14 @@ shows you how to define them and how to visualise them.</p>
 <h2>Format<a class="headerlink" href="#format" title="Permalink to this headline">¶</a></h2>
 <p>Here&#8217;s an example from the bAbi data:</p>
 <div class="highlight-md"><div class="highlight"><pre><span></span><span class="gu">##</span> story_07715946                     &lt;!-- name of the story - just for debugging --&gt;
-<span class="k">*</span> _greet
+<span class="k">*</span> greet
    <span class="k">-</span> action_ask_howcanhelp
-<span class="k">*</span> _inform[location=rome,price=cheap]
+<span class="k">*</span> inform{&quot;location&quot;: &quot;rome&quot;, &quot;price&quot;: &quot;cheap&quot;}
    <span class="k">-</span> action_on_it                     &lt;!-- user utterance, in format _intent[entities] --&gt;
    <span class="k">-</span> action_ask_cuisine
-<span class="k">*</span> _inform[cuisine=spanish]
+<span class="k">*</span> inform{&quot;cuisine&quot;: &quot;spanish&quot;}
    <span class="k">-</span> action_ask_numpeople             &lt;!-- action of the bot to execute --&gt;
-<span class="k">*</span> _inform[people=six]
+<span class="k">*</span> inform{&quot;people&quot;: &quot;six&quot;}
    <span class="k">-</span> action_ack_dosearch
 </pre></div>
 </div>
@@ -255,18 +256,18 @@ hashes <code class="docutils literal"><span class="pre">##</span> <span class="p
 The end of a story is denoted by a newline, and then a new story starts again with <code class="docutils literal"><span class="pre">##</span></code>.</p>
 <p>You can use <code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">checkpoints</span></code> to modularize and simplify your training data:</p>
 <div class="highlight-md"><div class="highlight"><pre><span></span><span class="gu">##</span> first story
-<span class="k">*</span> _hello
+<span class="k">*</span> hello
    <span class="k">-</span> action_ask_user_question
 <span class="k">&gt; </span><span class="ge">check_asked_question</span>
 
 <span class="gu">##</span> user affirms question
 <span class="k">&gt; </span><span class="ge">check_asked_question</span>
-<span class="k">*</span> _affirm
+<span class="k">*</span> affirm
   <span class="k">-</span> action_handle_affirmation
 
 <span class="gu">##</span> user denies question
 <span class="k">&gt; </span><span class="ge">check_asked_question</span>
-<span class="k">*</span> _deny
+<span class="k">*</span> deny
   <span class="k">-</span> action_handle_denial
 </pre></div>
 </div>
@@ -303,21 +304,22 @@ create a <code class="docutils literal"><span class="pre">visualize.py</span></c
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
 
-<span class="kn">from</span> <span class="nn">rasa_core.domain</span> <span class="k">import</span> <span class="n">TemplateDomain</span>
-<span class="kn">from</span> <span class="nn">rasa_core.training_utils.dsl</span> <span class="k">import</span> <span class="n">StoryFileReader</span>
-<span class="kn">from</span> <span class="nn">rasa_core.training_utils.visualization</span> <span class="k">import</span> <span class="n">visualize_stories</span>
+<span class="kn">from</span> <span class="nn">rasa_core.agent</span> <span class="k">import</span> <span class="n">Agent</span>
+<span class="kn">from</span> <span class="nn">rasa_core.policies.keras_policy</span> <span class="k">import</span> <span class="n">KerasPolicy</span>
+<span class="kn">from</span> <span class="nn">rasa_core.policies.memoization</span> <span class="k">import</span> <span class="n">MemoizationPolicy</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">domain</span> <span class="o">=</span> <span class="n">TemplateDomain</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;concert_domain.yml&quot;</span><span class="p">)</span>
-    <span class="n">stories</span> <span class="o">=</span> <span class="n">StoryFileReader</span><span class="o">.</span><span class="n">read_from_file</span><span class="p">(</span><span class="s2">&quot;data/stories.md&quot;</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span>
+    <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s2">&quot;concert_domain.yml&quot;</span><span class="p">,</span>
+                  <span class="n">policies</span><span class="o">=</span><span class="p">[</span><span class="n">MemoizationPolicy</span><span class="p">(),</span> <span class="n">KerasPolicy</span><span class="p">()])</span>
 
-    <span class="n">visualize_stories</span><span class="p">(</span><span class="n">stories</span><span class="p">,</span> <span class="s2">&quot;graph.png&quot;</span><span class="p">)</span>
+    <span class="n">agent</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="s2">&quot;data/stories.md&quot;</span><span class="p">,</span>
+                    <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;graph.png&quot;</span><span class="p">,</span> <span class="n">max_history</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Which will create the same image as the above python script call. The shown
 graph is still very simple, but the graphs can get quite complex.</p>
 <p>If you want to replace the messages from the stories file, which usually look
-like <code class="docutils literal"><span class="pre">_greet</span></code> with real messages e.g. <code class="docutils literal"><span class="pre">hello</span></code>, you can pass in a Rasa
+like <code class="docutils literal"><span class="pre">greet</span></code> with real messages e.g. <code class="docutils literal"><span class="pre">Hello</span></code>, you can pass in a Rasa
 NLU training data instance to replace them with messages from your training
 data.</p>
 <div class="admonition note">
@@ -334,6 +336,7 @@ given for the action in the domain (e.g. <code class="docutils literal"><span cl
            </div>
           </div>
           <footer>
+
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
@@ -367,22 +370,14 @@ given for the action in the domain (e.g. <code class="docutils literal"><span cl
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.7.9
+        v: 0.8.0
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.0/stories.html">0.8.0</a></dd>
             <dd><a href="0.7.9/stories.html">0.7.9</a></dd>
-            <dd><a href="0.7.8/stories.html">0.7.8</a></dd>
-            <dd><a href="0.7.7/stories.html">0.7.7</a></dd>
-            <dd><a href="0.7.6/stories.html">0.7.6</a></dd>
-            <dd><a href="0.7.5/stories.html">0.7.5</a></dd>
-            <dd><a href="0.7.4/stories.html">0.7.4</a></dd>
-            <dd><a href="0.7.3/stories.html">0.7.3</a></dd>
-            <dd><a href="0.7.2/stories.html">0.7.2</a></dd>
-            <dd><a href="0.7.1/stories.html">0.7.1</a></dd>
-            <dd><a href="0.7.0/stories.html">0.7.0</a></dd>
             <dd><a href="0.6.9/stories.html">0.6.9</a></dd>
         </dl>
         <dl>
@@ -398,7 +393,7 @@ given for the action in the domain (e.g. <code class="docutils literal"><span cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.9',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -424,6 +419,8 @@ given for the action in the domain (e.g. <code class="docutils literal"><span cl
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
+
+  
   
  
 <!-- Global Site Tag (gtag.js) - Google Analytics -->

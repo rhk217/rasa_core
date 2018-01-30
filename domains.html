@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Domain, Slots, and Actions &mdash; Rasa Core 0.7.9 documentation</title>
+  <title>Domain, Slots, and Actions &mdash; Rasa Core 0.8.0 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.7.9 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
         <link rel="next" title="Stories - The Training Data" href="stories.html"/>
         <link rel="prev" title="Rasa Core without Python" href="tutorial_remote.html"/> 
 
@@ -68,7 +68,7 @@
             
             
               <div class="version">
-                0.7
+                0.8
               </div>
             
           
@@ -137,6 +137,7 @@
 <li class="toctree-l1"><a class="reference internal" href="interpreters.html">Interpreters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="policies.html">Custom Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="state.html">Tracking Conversation State</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrations.html">Migration Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
@@ -316,9 +317,12 @@ your bot would execute the action <code class="docutils literal"><span class="pr
 
 <span class="k">class</span> <span class="nc">ActionCheckRestaurants</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="c1"># type: () -&gt; Text</span>
       <span class="k">return</span> <span class="s2">&quot;check_restaurants&quot;</span>
 
    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+      <span class="c1"># type: (Dispatcher, DialogueStateTracker, Domain) -&gt; List[Event]</span>
+
       <span class="n">cuisine</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="s1">&#39;cuisine&#39;</span><span class="p">)</span>
       <span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;select * from restaurants where cuisine=&#39;</span><span class="si">{0}</span><span class="s2">&#39; limit 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cuisine</span><span class="p">)</span>
       <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
@@ -630,6 +634,7 @@ any custom logic.</p>
            </div>
           </div>
           <footer>
+
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
@@ -663,22 +668,14 @@ any custom logic.</p>
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.7.9
+        v: 0.8.0
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.0/domains.html">0.8.0</a></dd>
             <dd><a href="0.7.9/domains.html">0.7.9</a></dd>
-            <dd><a href="0.7.8/domains.html">0.7.8</a></dd>
-            <dd><a href="0.7.7/domains.html">0.7.7</a></dd>
-            <dd><a href="0.7.6/domains.html">0.7.6</a></dd>
-            <dd><a href="0.7.5/domains.html">0.7.5</a></dd>
-            <dd><a href="0.7.4/domains.html">0.7.4</a></dd>
-            <dd><a href="0.7.3/domains.html">0.7.3</a></dd>
-            <dd><a href="0.7.2/domains.html">0.7.2</a></dd>
-            <dd><a href="0.7.1/domains.html">0.7.1</a></dd>
-            <dd><a href="0.7.0/domains.html">0.7.0</a></dd>
             <dd><a href="0.6.9/domains.html">0.6.9</a></dd>
         </dl>
         <dl>
@@ -694,7 +691,7 @@ any custom logic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.9',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -720,6 +717,8 @@ any custom logic.</p>
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
+
+  
   
  
 <!-- Global Site Tag (gtag.js) - Google Analytics -->
