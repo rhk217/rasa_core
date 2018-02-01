@@ -280,7 +280,7 @@ Here is an example implementation for our <code class="docutils literal"><span c
 
 <span class="k">class</span> <span class="nc">ActionConfirmBooking</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;confirm_booking&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;action_confirm_booking&quot;</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
         <span class="n">dispatcher</span><span class="o">.</span><span class="n">utter_message</span><span class="p">(</span><span class="s2">&quot;Do you want to confirm your booking at Papi&#39;s pizza?&quot;</span><span class="p">)</span>
@@ -299,7 +299,7 @@ example could look like this:</p>
 
 <span class="k">class</span> <span class="nc">ActionBookingReminder</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;booking_reminder&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;action_booking_reminder&quot;</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
         <span class="n">dispatcher</span><span class="o">.</span><span class="n">utter_message</span><span class="p">(</span><span class="s2">&quot;You have an unconfirmed booking at Papi&#39;s pizza, would you like to confirm it?&quot;</span><span class="p">)</span>
