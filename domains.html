@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Domain, Slots, and Actions &mdash; Rasa Core 0.8.0 documentation</title>
+  <title>Domain, Slots, and Actions &mdash; Rasa Core 0.8.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.1 documentation" href="index.html"/>
         <link rel="next" title="Stories - The Training Data" href="stories.html"/>
         <link rel="prev" title="Rasa Core without Python" href="tutorial_remote.html"/> 
 
@@ -306,7 +306,7 @@ variables like <code class="docutils literal"><span class="pre">{name}</span></c
 <span id="custom-actions"></span><h3>Defining Custom Actions<a class="headerlink" href="#defining-custom-actions" title="Permalink to this headline">¶</a></h3>
 <p>The easiest are <code class="docutils literal"><span class="pre">UtterActions</span></code>, which just send a message to the user. You define them by adding an entry to the
 action list that is named after the utterance. E.g. if there should be an action that utters the template called
-<code class="docutils literal"><span class="pre">utter_greet</span></code> you need to add <code class="docutils literal"><span class="pre">greet</span></code> to the list of defined actions. In the above example yaml you can see that
+<code class="docutils literal"><span class="pre">utter_greet</span></code> you need to add <code class="docutils literal"><span class="pre">utter_greet</span></code> to the list of defined actions. In the above example yaml you can see that
 all three of the defined actions are just named after utter templates and hence just respond with a message to
 the user.</p>
 <p><strong>What about more complicated actions?</strong>
@@ -318,7 +318,7 @@ your bot would execute the action <code class="docutils literal"><span class="pr
 <span class="k">class</span> <span class="nc">ActionCheckRestaurants</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
       <span class="c1"># type: () -&gt; Text</span>
-      <span class="k">return</span> <span class="s2">&quot;check_restaurants&quot;</span>
+      <span class="k">return</span> <span class="s2">&quot;action_check_restaurants&quot;</span>
 
    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
       <span class="c1"># type: (Dispatcher, DialogueStateTracker, Domain) -&gt; List[Event]</span>
@@ -363,7 +363,7 @@ custom code.</p>
 <h3>Images and Buttons<a class="headerlink" href="#images-and-buttons" title="Permalink to this headline">¶</a></h3>
 <p>Templates defined in a domains yaml file can contain images and buttons as well:</p>
 <div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">templates</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">utter_greeting</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">utter_greet</span><span class="p p-Indicator">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">text</span><span class="p p-Indicator">:</span> <span class="s">&quot;Hey!</span><span class="nv"> </span><span class="s">How</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">you?&quot;</span>
     <span class="l l-Scalar l-Scalar-Plain">buttons</span><span class="p p-Indicator">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">title</span><span class="p p-Indicator">:</span> <span class="s">&quot;great&quot;</span>
@@ -390,7 +390,7 @@ collected during the dialogue. You can either do that in your custom python
 code or by using the automatic slot filling mechanism. E.g if you got a template
 like this:</p>
 <div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">templates</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">utter_greeting</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">utter_greet</span><span class="p p-Indicator">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">text</span><span class="p p-Indicator">:</span> <span class="s">&quot;Hey,</span><span class="nv"> </span><span class="s">{name}.</span><span class="nv"> </span><span class="s">How</span><span class="nv"> </span><span class="s">are</span><span class="nv"> </span><span class="s">you?&quot;</span>
 </pre></div>
 </div>
@@ -668,12 +668,13 @@ any custom logic.</p>
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.8.0
+        v: 0.8.1
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.1/domains.html">0.8.1</a></dd>
             <dd><a href="0.8.0/domains.html">0.8.0</a></dd>
             <dd><a href="0.7.9/domains.html">0.7.9</a></dd>
             <dd><a href="0.6.9/domains.html">0.6.9</a></dd>
@@ -691,7 +692,7 @@ any custom logic.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.8.0',
+            VERSION:'0.8.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

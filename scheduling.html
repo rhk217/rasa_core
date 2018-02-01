@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Scheduling Reminders &mdash; Rasa Core 0.8.0 documentation</title>
+  <title>Scheduling Reminders &mdash; Rasa Core 0.8.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.8.0 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.1 documentation" href="index.html"/>
         <link rel="next" title="Agent" href="api/agent.html"/>
         <link rel="prev" title="Connecting to messaging &amp; voice platforms" href="connectors.html"/> 
 
@@ -277,7 +277,7 @@ Here is an example implementation for our <code class="docutils literal"><span c
 
 <span class="k">class</span> <span class="nc">ActionConfirmBooking</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;confirm_booking&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;action_confirm_booking&quot;</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
         <span class="n">dispatcher</span><span class="o">.</span><span class="n">utter_message</span><span class="p">(</span><span class="s2">&quot;Do you want to confirm your booking at Papi&#39;s pizza?&quot;</span><span class="p">)</span>
@@ -296,7 +296,7 @@ example could look like this:</p>
 
 <span class="k">class</span> <span class="nc">ActionBookingReminder</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;booking_reminder&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;action_booking_reminder&quot;</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
         <span class="n">dispatcher</span><span class="o">.</span><span class="n">utter_message</span><span class="p">(</span><span class="s2">&quot;You have an unconfirmed booking at Papi&#39;s pizza, would you like to confirm it?&quot;</span><span class="p">)</span>
@@ -390,12 +390,13 @@ So make sure to add a story into your training data that starts with the action 
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.8.0
+        v: 0.8.1
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.1/scheduling.html">0.8.1</a></dd>
             <dd><a href="0.8.0/scheduling.html">0.8.0</a></dd>
             <dd><a href="0.7.9/scheduling.html">0.7.9</a></dd>
             <dd><a href="0.6.9/scheduling.html">0.6.9</a></dd>
@@ -413,7 +414,7 @@ So make sure to add a story into your training data that starts with the action 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.8.0',
+            VERSION:'0.8.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
