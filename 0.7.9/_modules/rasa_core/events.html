@@ -218,6 +218,19 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="deserialise_events"><a class="viewcode-back" href="../../api/events.html#rasa_core.events.deserialise_events">[docs]</a><span class="k">def</span> <span class="nf">deserialise_events</span><span class="p">(</span><span class="n">serialized_events</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+    <span class="c1"># Example format: {&quot;event&quot;: &quot;set_slot&quot;, &quot;value&quot;: 5, &quot;name&quot;: &quot;my_slot&quot;}</span>
+
+    <span class="n">deserialized</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">serialized_events</span><span class="p">:</span>
+        <span class="n">etype</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">etype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copied</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">copied</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">]</span>
+            <span class="n">deserialized</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">from_parameters</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">copied</span><span class="p">,</span> <span class="n">domain</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">deserialized</span></div>
+
+
 <span class="c1"># noinspection PyProtectedMember</span>
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../api/events.html#rasa_core.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An event is one of the following:</span>
@@ -673,7 +686,7 @@
 <div class="viewcode-block" id="ReminderScheduled.as_story_string"><a class="viewcode-back" href="../../api/events.html#rasa_core.events.ReminderScheduled.as_story_string">[docs]</a>    <span class="k">def</span> <span class="nf">as_story_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">props</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
             <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_name</span><span class="p">,</span>
-            <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_date_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s2">&quot;date_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_date_time</span><span class="p">,</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;kill_on_user_msg&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_user_message</span><span class="p">})</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{name}{props}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_name</span><span class="p">,</span> <span class="n">props</span><span class="o">=</span><span class="n">props</span><span class="p">)</span></div>
