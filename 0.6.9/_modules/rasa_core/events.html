@@ -206,33 +206,13 @@
 <span class="kn">import</span> <span class="nn">jsonpickle</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">builtins</span> <span class="k">import</span> <span class="nb">str</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="kn">import</span> <span class="nn">rasa_core</span>
 <span class="kn">from</span> <span class="nn">rasa_core</span> <span class="k">import</span> <span class="n">utils</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">rasa_core.trackers</span> <span class="k">import</span> <span class="n">DialogueStateTracker</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="deserialise_events"><a class="viewcode-back" href="../../api/events.html#rasa_core.events.deserialise_events">[docs]</a><span class="k">def</span> <span class="nf">deserialise_events</span><span class="p">(</span><span class="n">serialized_events</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
-    <span class="c1"># type: (List[Dict[Text, Any]], rasa_core.domain.Domain) -&gt; List[Event]</span>
-    <span class="sd">&quot;&quot;&quot;Convert a list of dictionaries to a list of corresponding events.</span>
-
-<span class="sd">    Example format:</span>
-<span class="sd">        [{&quot;event&quot;: &quot;set_slot&quot;, &quot;value&quot;: 5, &quot;name&quot;: &quot;my_slot&quot;}]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">deserialized</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">serialized_events</span><span class="p">:</span>
-        <span class="n">etype</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">etype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">copied</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="k">del</span> <span class="n">copied</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">]</span>
-            <span class="n">deserialized</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">from_parameters</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">copied</span><span class="p">,</span> <span class="n">domain</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">deserialized</span></div>
 
 
 <span class="c1"># noinspection PyProtectedMember</span>
