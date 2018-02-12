@@ -442,11 +442,7 @@
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="Agent.create_tracker_store"><a class="viewcode-back" href="../../api/agent.html#rasa_core.agent.Agent.create_tracker_store">[docs]</a>    <span class="k">def</span> <span class="nf">create_tracker_store</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
         <span class="c1"># type: (Optional[TrackerStore], Domain) -&gt; TrackerStore</span>
-        <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span>
-            <span class="k">return</span> <span class="n">store</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">InMemoryTrackerStore</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">store</span> <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">InMemoryTrackerStore</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_create_interpreter</span><span class="p">(</span>
