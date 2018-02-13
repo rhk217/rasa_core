@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Common Patterns &mdash; Rasa Core 0.8.1 documentation</title>
+  <title>Common Patterns &mdash; Rasa Core 0.8.2 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Rasa Core 0.8.1 documentation" href="index.html"/>
+    <link rel="top" title="Rasa Core 0.8.2 documentation" href="index.html"/>
         <link rel="next" title="Plumbing - How it all fits together" href="plumbing.html"/>
         <link rel="prev" title="Stories - The Training Data" href="stories.html"/> 
 
@@ -265,11 +265,13 @@ this will be saved as a slot,</p>
 </div>
 <p>When Rasa Core predicts the next action to take, the only information it has about the <code class="docutils literal"><span class="pre">TextSlot</span></code> s is
 <strong>whether or not they are defined</strong>. So you have enough information to know that you don&#8217;t have to ask for this
-information again, but the <em>value</em> has no impact on which actions Rasa Core predicts.
-The full set of slot types and their behaviour is described here: <a class="reference internal" href="domains.html#slot-types"><span class="std std-ref">Slots</span></a>.</p>
+information again, but the <em>value</em> of a <code class="docutils literal"><span class="pre">TextSlot</span></code> has no impact on which actions Rasa Core predicts. This is
+explained in <a class="reference internal" href="#slot-features"><span class="std std-ref">more detail below</span></a>.</p>
+<p>The full set of slot types and their behaviour is described here: <a class="reference internal" href="domains.html#slot-types"><span class="std std-ref">Slots</span></a>.</p>
 </div>
 <div class="section" id="using-slot-values-to-influence-which-actions-are-predicted">
 <h2>Using Slot Values to Influence Which Actions are Predicted<a class="headerlink" href="#using-slot-values-to-influence-which-actions-are-predicted" title="Permalink to this headline">¶</a></h2>
+<p><strong>Custom Slots</strong></p>
 <p>Maybe your restaurant booking system can only handle bookings for up to 6 people, so the
 request above isn&#8217;t valid. In this case you want the <em>value</em> of the slot to influence the
 next selected action (not just whether it&#8217;s been specified). You can achieve this using a custom
@@ -315,14 +317,88 @@ a <code class="docutils literal"><span class="pre">categorical</span></code> slo
 </pre></div>
 </div>
 <p>Rasa automatically represents (featurises) this as a one-hot encoding of the values: <code class="docutils literal"><span class="pre">(1,0,0)</span></code>, <code class="docutils literal"><span class="pre">(0,1,0)</span></code>, or <code class="docutils literal"><span class="pre">(0,0,1)</span></code>.</p>
+<p id="slot-features"><strong>Slot features</strong></p>
+<p>When Rasa Core runs trains a dialogue model using your stories the presence of a <code class="docutils literal"><span class="pre">Slot</span></code> entry will be used to help
+determine the next action that should be taken. This works best with <code class="docutils literal"><span class="pre">CategoricalSlot</span></code> slot types.</p>
+<p>A <code class="docutils literal"><span class="pre">TextSlot</span></code> can have any value, but it only has a single feature. It can be set, in which case the feature
+has a value <code class="docutils literal"><span class="pre">(1)</span></code>, or if it is not set it will have a value <code class="docutils literal"><span class="pre">(0)</span></code>.</p>
+<p>A <code class="docutils literal"><span class="pre">CategoricalSlot</span></code> has a number of values each of which is a feature. Taking the example below, when the
+<code class="docutils literal"><span class="pre">restaurant_availability</span></code> slot is set Rasa Core will be able to determine whether or not the restaurant in question is
+available and choose radically different actions to perform based on the value.</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">restaurant_availability</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">categorical</span>
+    <span class="l l-Scalar l-Scalar-Plain">values</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">unknown</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">booked-out</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">waiting-list</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">available</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal"><span class="pre">Slot</span></code> will be set by Rasa Core if its name and the name of the entity detected by the NLU module
+match. The value of the slot will influence the story dialogue if you add the slot to the training
+stories - this is explained in the examples below. Slots can also be set explicitly from our own custom <code class="docutils literal"><span class="pre">Action</span></code>
+and influence the dialogue based on real-world information.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ActionMakeBooking</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dispatcher</span><span class="p">,</span> <span class="n">tracker</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
+        <span class="n">restaurant_name</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="s2">&quot;restaurant_name&quot;</span><span class="p">)</span>
+        <span class="n">location</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">)</span>
+        <span class="n">num_people</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="s2">&quot;people&quot;</span><span class="p">)</span>
+        <span class="n">date</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
+        <span class="c1"># this will fetch the availability of the restaurant from your DB or an API</span>
+        <span class="n">availability</span><span class="o">=</span><span class="n">restaurantService</span><span class="o">.</span><span class="n">check_availability</span><span class="p">(</span><span class="n">restaurant_name</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">num_people</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">SlotSet</span><span class="p">(</span><span class="s2">&quot;restaurant_availability&quot;</span><span class="p">,</span> <span class="n">availability</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>The snippet of code above from a hypothetical <code class="docutils literal"><span class="pre">Action</span></code> shows that the value of the slot <code class="docutils literal"><span class="pre">restaurant_availability</span></code> is determined by querying a database or API. The restaurant availability is not something that is known when we train the dialogue model, the <code class="docutils literal"><span class="pre">Slot</span></code> value is the only way we can alter the course of the conversation based on information from the outside world.</p>
+<p>The data fetched from an API call can also be stored for later use without altering the outcome of a conversation as detailed in <a class="reference internal" href="#unfeaturized-slots"><span class="std std-ref">Storing API responses in the tracker</span></a>.</p>
+<p><strong>Slot Features Example</strong></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">These example stories have been constructed manually for illustrative purposes. While this is a valid approach to training your model the preferred approach is to use <a class="reference internal" href="tutorial_interactive_learning.html#tutorial-interactive-learning"><span class="std std-ref">interactive learning</span></a> which generates stories that are <em>much</em> less error-prone.</p>
+</div>
+<p>In this first story we will try and make a booking for 5 people in a restaurant on the night of 21st August 2018.
+In this case the restaurant is booked out so we want to apologize to the customer and suggest similar restaurants. It is assumed that the Rasa Core model has been trained to recognise a message like <em>&#8220;Book Murphys Bistro on August 21 for 5 people&#8221;</em></p>
+<div class="highlight-md"><div class="highlight"><pre><span></span><span class="gh">#</span> restaurant unavailable
+<span class="k">*</span> _make_booking{&quot;people&quot;:&quot;5&quot;, &quot;date&quot;:&quot;2018-08-21T19:30:00+00:00&quot;, &quot;restaurant_id&quot;:&quot;145&quot;}
+<span class="k">-</span> slot{&quot;restaurant_availability&quot;: &quot;booked-out&quot;}
+<span class="k">-</span> utter_sorry_unavailable
+<span class="k">-</span> action_show_similar
+</pre></div>
+</div>
+<p>This second story details the flow when the restaurant is available. We will tell the customer we have booked
+the restaurant and ask if any further help is required.</p>
+<p>In this last example, the intent <code class="docutils literal"><span class="pre">make_booking</span></code> was found but either Rasa Core failed to parse a date or the
+date was not provided. In this case we would need to ask for more information.</p>
+<p><strong>Note:</strong> this last story is using the fact that <code class="docutils literal"><span class="pre">date</span></code> is a <code class="docutils literal"><span class="pre">TextSlot</span></code> and therefore has a single feature that
+is set or not.</p>
+<div class="highlight-md"><div class="highlight"><pre><span></span><span class="gh">#</span> restaurant request without date
+<span class="k">*</span> _make_booking{&quot;people&quot;:&quot;5&quot;, &quot;restaurant_id&quot;:&quot;145&quot;}
+<span class="k">-</span> slot{&quot;date&quot;: null}
+<span class="k">-</span> utter_date_required
+<span class="k">*</span> _inform{&quot;date&quot;:&quot;2018-08-22T19:30:00+00:00&quot;}
+<span class="k">-</span> action_make_booking
+<span class="k">-</span> utter_restaurant_booked
+<span class="k">-</span> utter_anything_more
+<span class="k">*</span> _bye
+<span class="k">-</span> utter_thank_you
+</pre></div>
+</div>
 </div>
 <div class="section" id="storing-api-responses-in-the-tracker">
-<h2>Storing API responses in the tracker<a class="headerlink" href="#storing-api-responses-in-the-tracker" title="Permalink to this headline">¶</a></h2>
-<p>You often want to save some information in the tracker, like the results from
-a database query, or from an API call. If you don&#8217;t want the value to influence the
-dialogue, you can use a <code class="docutils literal"><span class="pre">unfeaturized</span></code> slot. You can explicitly set this value in a custom action:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rasa_core.actions</span> <span class="k">import</span> <span class="n">Action</span>
-<span class="kn">from</span> <span class="nn">rasa_core.events</span> <span class="k">import</span> <span class="n">SlotSet</span>
+<span id="unfeaturized-slots"></span><h2>Storing API responses in the tracker<a class="headerlink" href="#storing-api-responses-in-the-tracker" title="Permalink to this headline">¶</a></h2>
+<p>The result from an API call can be stored in a <code class="docutils literal"><span class="pre">Slot</span></code> as <a class="reference internal" href="#slot-features"><span class="std std-ref">explained above</span></a>. In that case
+the data is stored in a <code class="docutils literal"><span class="pre">Slot</span></code> that is featurized, influencing the flow of the dialogue.</p>
+<p>A slot of type <code class="docutils literal"><span class="pre">unfeaturized</span></code> can be used to store the results from a database query or API call so that it will
+not influence the course of a dialogue. An exaple <code class="docutils literal"><span class="pre">unfeaturized</span></code> slot defined in a domain file:</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">slots</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">api_result</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">unfeaturized</span>
+</pre></div>
+</div>
+<p>You can set this value in a custom <code class="docutils literal"><span class="pre">Action</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rasa_core.actions</span> <span class="kn">import</span> <span class="n">Action</span>
+<span class="kn">from</span> <span class="nn">rasa_core.events</span> <span class="kn">import</span> <span class="n">SlotSet</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="k">class</span> <span class="nc">ApiAction</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
@@ -334,6 +410,7 @@ dialogue, you can use a <code class="docutils literal"><span class="pre">unfeatu
         <span class="k">return</span> <span class="p">[</span><span class="n">SlotSet</span><span class="p">(</span><span class="s2">&quot;api_result&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)]</span>
 </pre></div>
 </div>
+<p>This is especially useful when you are <a class="reference internal" href="state.html#persisting-trackers"><span class="std std-ref">persisting your tracker</span></a> in Redis or another data store. You could cache the API or database responses separately, but storing them in the tracker means they will be persisted automatically with the rest of the dialogue state, and will be restored along with the rest of the state should the system require a reboot.</p>
 </div>
 </div>
 
@@ -375,12 +452,13 @@ dialogue, you can use a <code class="docutils literal"><span class="pre">unfeatu
 <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
         <span class="fa fa-book"> Other Versions</span>
-        v: 0.8.1
+        v: 0.8.2
         <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
         <dl>
             <dt>Tags</dt>
+            <dd><a href="0.8.2/patterns.html">0.8.2</a></dd>
             <dd><a href="0.8.1/patterns.html">0.8.1</a></dd>
             <dd><a href="0.8.0/patterns.html">0.8.0</a></dd>
             <dd><a href="0.7.9/patterns.html">0.7.9</a></dd>
@@ -399,7 +477,7 @@ dialogue, you can use a <code class="docutils literal"><span class="pre">unfeatu
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.8.1',
+            VERSION:'0.8.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
