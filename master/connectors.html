@@ -408,6 +408,10 @@ as your <code class="docutils literal"><span class="pre">slack_token</span></cod
 <div class="section" id="id3">
 <h3>Using run script<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>If you want to connect to the slack input channel using the run script, e.g. using</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -m rasa_core.run -d models/dialogue -u models/nlu/current
+    --port <span class="m">5002</span> -c telegram --credentials telegram_credentials.yml
+</pre></div>
+</div>
 <p>you need to supply a <code class="docutils literal"><span class="pre">telegram_credentials.yml</span></code> with the following content:</p>
 <div class="highlight-default"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
