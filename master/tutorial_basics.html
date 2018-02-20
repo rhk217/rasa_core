@@ -598,9 +598,9 @@ you can mix them):</p>
 </ul>
 <p>For this example, we are going to create the stories by writing them directly
 to <code class="docutils literal"><span class="pre">stories.md</span></code>.
-Stories begin with <code class="docutils literal"><span class="pre">##</span></code> and a string as an identifier. User actions start
-with an asterisk, and bot actions are specified by lines beginning with a
-dash. The end of a story is denoted by a newline. See <a class="reference internal" href="stories.html#stories"><span class="std std-ref">Stories - The Training Data</span></a> for
+Stories begin with <code class="docutils literal"><span class="pre">##</span></code> and a string as an identifier. User intents start
+with an asterisk <code class="docutils literal"><span class="pre">*</span></code>, and bot actions are specified by lines beginning with a
+dash <code class="docutils literal"><span class="pre">-</span></code>. The end of a story is denoted by a newline. See <a class="reference internal" href="stories.html#stories"><span class="std std-ref">Stories - The Training Data</span></a> for
 more information about the data format.</p>
 <p>Enough talking, let&#8217;s head over to our stories:</p>
 <div class="highlight-md"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -671,7 +671,9 @@ stories.</p>
 </pre></div>
 </div>
 <p>This will train the dialogue model for <code class="docutils literal"><span class="pre">300</span></code> epochs and store it
-into <code class="docutils literal"><span class="pre">models/dialogue</span></code>. Now we can use that trained dialogue model
+into <code class="docutils literal"><span class="pre">models/dialogue</span></code>. Where <code class="docutils literal"><span class="pre">1</span></code> epoch corresponds to one pass of the algorithm
+through all the trainning examples, which in this case are the stories.</p>
+<p>Now we can use that trained dialogue model
 and the previously created NLU model to run our bot.
 Here we&#8217;ll just talk to the bot on the command line:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>python -m rasa_core.run -d models/dialogue -u models/nlu/default/current
@@ -685,6 +687,7 @@ Rasa Core.</p>
 <p class="last">Button emulation does not work in console output, you need to type words like &#8220;great&#8221; or &#8220;sad&#8221;
 instead of numbers 1 or 2.</p>
 </div>
+<p>In order to restart the bot type <code class="docutils literal"><span class="pre">/restart</span></code> into the command line.</p>
 </div>
 <div class="section" id="bonus-handle-messages-from-facebook">
 <h2>Bonus: Handle messages from Facebook<a class="headerlink" href="#bonus-handle-messages-from-facebook" title="Permalink to this headline">¶</a></h2>
