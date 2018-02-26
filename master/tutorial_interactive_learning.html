@@ -124,6 +124,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/agent.html">Agent</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/events.html">Events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/tracker.html">Dialogue State Tracker</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -455,6 +456,20 @@ The bot wants to [action_show_venue_reviews] due to the intent. Is this correct?
 <p>Now we type <code class="docutils literal"><span class="pre">2</span></code>, because it chose the wrong action, and we get a new
 prompt asking for the correct one. This also shows the probabilities the
 model has assigned to each of the actions.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>what is the next action for the bot?
+
+     0                           action_listen    0.19
+     1                          action_restart    0.00
+     2                           utter_default    0.00
+     3                             utter_greet    0.03
+     4                           utter_goodbye    0.03
+     5                     utter_youarewelcome    0.02
+     6                  action_search_concerts    0.09
+     7                    action_search_venues    0.02
+     8             action_show_concert_reviews    0.29
+     9               action_show_venue_reviews    0.33
+</pre></div>
+</div>
 <p>In this case, the bot should <code class="docutils literal"><span class="pre">action_show_concert_reviews</span></code> (rather than venue
 reviews!) so we type <code class="docutils literal"><span class="pre">8</span></code> and hit enter.</p>
 <div class="admonition note">
